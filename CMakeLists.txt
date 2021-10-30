@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project ("Olly")
+project ("Oliver")
 
 # Include sub-projects.
-add_subdirectory ("Olly")
+add_subdirectory ("Oliver")
