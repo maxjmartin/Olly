@@ -44,12 +44,14 @@ namespace Olly {
 
             and_op, or_op, xor_op,
             add_op, sub_op, mul_op, div_op, mod_op, fdiv_op, rem_op, pow_op,
+            eq_op, ne_op, lt_op, le_op, gt_op, ge_op,
+            bind_op,
 
         INFIX_OPERATORS_STOP,
 
         /*******************************************************************************/
 
-            ASSIGN_op, lambda_op, end_scope_op, let_op, def_op, bind_op,
+            ASSIGN_op, lambda_op, end_scope_op, let_op, def_op, BIND_op,
 
         FUNCTION_OPERATORS,
 
@@ -59,6 +61,7 @@ namespace Olly {
 
             AND_op,  OR_op, XOR_op, 
             ADD_op, SUB_op, MUL_op, DIV_op, MOD_op, FDIV_op, REM_op, POW_op,
+            EQ_op, NE_op, LT_op, LE_op, GT_op, GE_op,
 
         BINARY_OPERATORS,
 
@@ -66,11 +69,10 @@ namespace Olly {
 
         return_op, relent_op,
 
-        eq_op, ne_op, lt_op, le_op, gt_op, ge_op,
 
         INFIX_BINARY_OPERATORS,
 
-        EQ_op, NE_op, LT_op, LE_op, GT_op, GE_op,
+        
 
         POSTFIX_BINARY_OPERATORS,
 
@@ -126,7 +128,7 @@ namespace Olly {
 
         { "ASSIGN",           OP_CODE::ASSIGN_op },    { "let",                 OP_CODE::let_op },
         { "def",                 OP_CODE::def_op },    { "==",                 OP_CODE::bind_op },
-        { "lambda",            OP_CODE::lambda_op},
+        { "lambda",           OP_CODE::lambda_op },    { "BIND",               OP_CODE::BIND_op },
 
         { "ADD",                 OP_CODE::ADD_op },    { "SUB",                 OP_CODE::SUB_op },
         { "MUL",                 OP_CODE::MUL_op },    { "DIV",                 OP_CODE::DIV_op },
@@ -145,15 +147,21 @@ namespace Olly {
         { "and",                 OP_CODE::and_op },    { "or",                   OP_CODE::or_op },
         { "xor",                 OP_CODE::xor_op },    { "neg",                 OP_CODE::neg_op },
 
+        { "=",                    OP_CODE::eq_op },    { "<=",                   OP_CODE::le_op },
+        { "!=",                   OP_CODE::ne_op },    { ">",                    OP_CODE::gt_op },
+        { "<",                    OP_CODE::lt_op },    { ">=",                   OP_CODE::ge_op },
+
+        { "EQ",                    OP_CODE::EQ_op },    { "LE",                   OP_CODE::LE_op },
+        { "NE",                    OP_CODE::NE_op },    { "GT",                   OP_CODE::GT_op },
+        { "LT",                    OP_CODE::LT_op },    { "GE",                   OP_CODE::GE_op },
+
         /**********  UNSORTED **********/
 
 
         { "return",           OP_CODE::return_op },    { "relent",           OP_CODE::relent_op },                                      
           
 
-        { "=",                    OP_CODE::eq_op },    { "<=",                   OP_CODE::le_op },
-        { "!=",                   OP_CODE::ne_op },    { ">",                    OP_CODE::gt_op },
-        { "<",                    OP_CODE::lt_op },    { ">=",                   OP_CODE::ge_op },
+        
 
         { "_STACK_",           OP_CODE::STACK_op },
         { "_DEPTH_",           OP_CODE::DEPTH_op },

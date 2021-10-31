@@ -47,10 +47,10 @@ namespace Olly {
 			case OP_CODE::let_op: {  // Presupose the definition of a variable.  
 
 				let vars = get_expression_from_code();
-				let oper = get_expression_from_code();
 				let vals = get_expression_from_code();
+				let oper = get_expression_from_code();
 
-				if (oper.op_code() == OP_CODE::eq_op) {
+				if (oper.op_code() == OP_CODE::EQ_op) {
 
 					if (vars.type() != "expression") {
 
@@ -76,7 +76,7 @@ namespace Olly {
 						}
 					}
 				}
-				else if (oper.op_code() == OP_CODE::bind_op) {
+				else if (oper.op_code() == OP_CODE::BIND_op) {
 
 					let lam = get_symbol(vars);
 
@@ -87,10 +87,10 @@ namespace Olly {
 						while (vals.is()) {
 
 							let a = pop_lead(vals);
-							let op = pop_lead(vals);
 							let b = pop_lead(vals);
+							let op = pop_lead(vals);
 
-							if (op.op_code() == OP_CODE::eq_op) {
+							if (op.op_code() == OP_CODE::EQ_op) {
 
 								l.bind_variable(a, b);
 							}
@@ -129,55 +129,6 @@ namespace Olly {
 				set_expression_on_code(var);
 				set_expression_on_code(op_call(OP_CODE::ASSIGN_op));
 			}	break;
-
-				//case OP_CODE::return_op: {  // Return an expression from a function, then quite the function.
-
-				//	let args = get_expression_from_code();
-
-				//	if (args.type() != "expression") {
-				//		args = expression(args);
-				//	}
-
-				//	let queue = expression();
-
-				//	while (args.is()) {
-
-				//		let a = pop_lead(args);
-
-				//		while (a.type() == "symbol") {
-				//			a = get_symbol(a);
-				//		}
-
-				//		queue = queue.place_lead(a);
-				//	}
-
-				//	let end = op_call(OP_CODE::end_scope_op);
-				//	let itr = get_expression_from_code();
-
-				//	while (end != itr) {
-				//		itr = get_expression_from_code();
-				//	}
-
-				//	while (queue.is()) {
-
-				//		let a = pop_lead(queue);
-
-				//		set_expression_on_code(a);
-				//	}
-				//	set_expression_on_code(end);
-
-				//} break;
-
-				//case OP_CODE::relent_op: { // Place the next expression on to the stack without evaluation.  
-
-				//	let arg = get_expression_from_code();
-
-				//	while (arg.type() == "symbol") {
-				//		arg = get_symbol(arg);
-				//	}
-
-				//	set_expression_on_stack(arg);
-				//} break;
 
 			default:
 				break;

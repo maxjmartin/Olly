@@ -45,6 +45,30 @@ namespace Olly {
 				x = x.l_xor(y);
 				break;
 
+			case OP_CODE::EQ_op:
+				x = boolean(x == y);
+				break;
+
+			case OP_CODE::NE_op:
+				x = boolean(x != y);
+				break;
+
+			case OP_CODE::GT_op:
+				x = boolean(x > y);
+				break;
+
+			case OP_CODE::GE_op:
+				x = boolean(x >= y);
+				break;
+
+			case OP_CODE::LT_op:
+				x = boolean(x < y);
+				break;
+
+			case OP_CODE::LE_op:
+				x = boolean(x <= y);
+				break;
+
 			case OP_CODE::ADD_op:
 				x = x + y;
 				break;
