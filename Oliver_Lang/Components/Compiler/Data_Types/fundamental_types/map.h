@@ -2,7 +2,7 @@
 
 /********************************************************************************************/
 //
-//			Copyright 2019 Max J. Martin
+//			Copyright 2022 Max J. Martin
 //
 //			This file is part of Oliver.
 //			
@@ -24,7 +24,9 @@
 #include <concepts>
 #include <iterator>
 
-#include "./Components/Compiler/Data_Types/fundamental_types/support_types/integer_value.h"
+#include "../let.h"
+#include "./error.h"
+#include "./support_types/integer_value.h"
 
 namespace Olly {
 
@@ -44,9 +46,10 @@ namespace Olly {
     public:
 
         map();
-        map(const map& l);
-        map(let exp);
-        map(let x, let y);
+        map(let exp_pairs);
+        map(let pair, let left, let right);
+        map(const map& l)     = default;
+        map(map&& m) noexcept = default;
         virtual ~map();
 
         friend str_type           _type_(const map& self);
@@ -58,24 +61,37 @@ namespace Olly {
 
         friend size_type          _size_(const map& self);
         friend bool_type           _has_(const map& self, const let& key);
-        friend let                 _set_(const map& self, const let& key, const let& value);
         friend let                 _get_(const map& self, const let& key);
+        friend let                 _set_(const map& self, const let& key, const let& val);
+        friend let                 _del_(const map& self, const let& key);
         friend let               _clear_(const map& self);
 
+        friend let               to_pair(const map& self);
+        friend let         to_expression(const map& self);
+
     private:
-        void balance();
-        let  get_list() const;
+        typedef std::vector<bool_type> direction_queue;
+        typedef std::vector<let>       buffer_queue;
+
+        int_type  get_height(let node) const;
+        int_type get_balance(let node) const;
+        let      set_balance(let node) const;
+
+        size_type  get_size()         const;
+        size_type  get_size(let node) const;
+
+        let  get_list()         const;
         let  get_list(let node) const;
 
-        let make_pair(let a, let b);
-        let make_node(let p, let l, let r);
+        let  get_key(let node) const;
 
-        let set_value(let node, let key, let value);
-        let set_branch(let node, let key, let value);
+        let set_branch(let node, let key, let value) const;
+        let  set_value(let node, let key, let value) const;
 
-        size_type calculate_height(let node);
+        let       left_rotation(let node) const;
+        let      right_rotation(let node) const;
 
-        let rotate(let node);
+        let define_node(let pair, let left, let right) const;
     };
 
     /********************************************************************************************/
@@ -84,35 +100,35 @@ namespace Olly {
     //
     /********************************************************************************************/
 
-    map::map() : _node(expression()) {
+    inline map::map() : _node(expression()) {
     }
 
-    map::map(const map& s) : _node(s._node) {
-    }
+    inline map::map(let exp_pairs) : _node(expression()) {
 
-    map::map(let exp) : _node(expression()) {
+        while (exp_pairs.is()) {
 
-        while (exp.is()) {
-
-            let key = pop_lead(exp);
-            let val = pop_lead(exp);
-            let opr = pop_lead(exp);
+            let key = pop_lead(exp_pairs);
+            let val = pop_lead(exp_pairs);
+            let opr = pop_lead(exp_pairs);
 
             if (opr.op_code() == OP_CODE::EQ_op) {
 
                 _node = set_value(_node, key, val);
             }
         }
-        // print("node = " + str(_node));
     }
 
-    map::map(let x, let y) : _node() {
+    inline map::map(let pair, let left, let right) : _node(expression()) {
+
+        _node = define_node(pair, left, right);
+
+        _node = set_balance(_node);
     }
 
-    map::~map() {
+    inline Olly::map::~map() {
     }
 
-    std::string _type_(const map& self) {
+    str_type Olly::_type_(const map& self) {
         return "map";
     }
 
@@ -120,13 +136,13 @@ namespace Olly {
         return self._node.is();
     }
 
-    real_type _comp_(const map& self, const let& other) {
+    real_type _comp_(const map& self, const let& other)  {
+        
+        const map* map_ptr = other.cast<map>();
 
-        const map* ptr = other.cast<map>();
+        if (map_ptr) {
 
-        if (ptr) {
-
-            return self._node.comp(ptr->_node);
+            return self.get_list().comp(map_ptr->get_list());
         }
 
         return NOT_A_NUMBER;
@@ -195,19 +211,16 @@ namespace Olly {
     }
 
     size_type _size_(const map& self) {
-
-        let list = self.get_list();
-
-        return list.size();
+        return self.get_size();
     }
 
     bool_type _has_(const map& self, const let& key) {
 
-        let node = self._node;
+        let n = self;
 
-        while (node.is()) {
+        while (n.is_something()) {
 
-            let pair = first(node);
+            let pair = n.to_pair();
 
             if (first(pair) == key) {
                 return true;
@@ -215,36 +228,23 @@ namespace Olly {
 
             if (key < first(pair)) {
 
-                node = second(node);  // left
+                n = second(n);
             }
             else {
-                node = third(node);  // right
+                n = third(n);
             }
         }
 
         return false;
     }
 
-    let _set_(const map& self, const let& key, const let& value) {
-
-        if (!_is_(self)) {
-            return map(key, value);
-        }
-
-        map m = self;
-
-        m._node = m.set_value(m._node, key, value);
-
-        return m;
-    }
-
     let _get_(const map& self, const let& key) {
 
-        let node = self._node;
+        let n = self;
 
-        while (node.is()) {
+        while (n.is_something()) {
 
-            let pair = first(node);
+            let pair = n.to_pair();
 
             if (first(pair) == key) {
                 return second(pair);
@@ -252,28 +252,135 @@ namespace Olly {
 
             if (key < first(pair)) {
 
-                node = second(node);  // left
+                n = second(n);
             }
             else {
-                node = third(node);  // right
+                n = third(n);
             }
         }
 
         return nothing();
     }
 
+    let _set_(const map& self, const let& key, const let& val) {
+        
+        if (!_is_(self)) {
+            return map(make_pair(key, val), expression(), expression());
+        }
+
+        map n = self;
+
+        n._node = n.set_value(n._node, key, val);
+
+        return n;
+    }
+
+    let _del_(const map& self, const let& key) {
+        return let();
+    }
+
     let _clear_(const map& self) {
         return map();
     }
 
-    inline void map::balance() {
+    let to_pair(const map& self) {
+        return first(self._node);
     }
 
-    inline let map::get_list() const {
+    let to_expression(const map& self) {
+        return self._node;
+    }
+
+    inline int_type map::get_height(let node) const {
+        return (node.is() ? fourth(node).to_integer() : -1);
+    }
+
+    inline int_type map::get_balance(let node) const {
+        return get_height(second(node)) - get_height(third(node));
+    }
+
+    inline let map::set_balance(let node) const {
+        
+        int_type bf = get_balance(_node);
+
+        if (bf > 1) {
+
+            int_type left_bf = get_balance(second(node));
+
+            if (left_bf >= 0) {
+
+                node = right_rotation(node);
+            }
+            else {
+
+                let left = left_rotation(second(node));
+
+                node = define_node(first(node), left, third(node));
+
+                node = right_rotation(node);
+            }
+        }
+        else if (bf < -1) {
+
+            int_type right_bf = get_balance(second(node));
+
+            if (right_bf >= 0) {
+
+                let right = right_rotation(third(node));
+
+                node = define_node(first(node), second(node), right);
+
+                node = left_rotation(node);
+            }
+            else {
+
+                node = left_rotation(node);
+            }
+        }
+
+        return node;
+    }
+
+    inline size_type map::get_size() const {
+        return get_size(_node);
+    }
+
+    inline size_type map::get_size(let node) const {
+
+        let buffer = expression();
+
+        let n = node;
+
+        int_type size = 0;
+
+        while (n.is() || buffer.is()) {
+
+            while (n.is()) {  // Loop through all left side branches.
+
+                buffer = buffer.place_lead(n);
+
+                n = second(n);
+            }
+
+            n = pop_lead(buffer);
+
+            // For other effects place manipulation code here.
+
+            size += 1;
+
+            // End code manipulation.
+
+            n = third(n);  // Get any right side branches that may exist.
+        }
+
+        return size;
+    }
+
+    let map::get_list() const {
         return get_list(_node);
     }
 
-    inline let map::get_list(let node) const {
+    let map::get_list(let node) const {
 
         let buffer = expression();
 
@@ -304,16 +411,27 @@ namespace Olly {
         return result;
     }
 
-    inline let map::make_pair(let a, let b) {
-
-        let e = expression();
-        e = e.place_lead(b);
-        e = e.place_lead(a);
-
-        return e;
+    inline let Olly::map::get_key(let node) const {
+        return first(first(node));
     }
 
-    inline let map::set_value(let node, let key, let value) {
+    let map::set_branch(let node, let key, let value) const {
+
+        if (!node.is()) {
+            return map(make_pair(key, value), expression(), expression())._node;
+        }
+
+        let pair = first(node);
+
+        if (first(pair) == key) {
+
+            return map(make_pair(key, value), second(node), third(node))._node;
+        }
+
+        return nothing();
+    }
+
+    let map::set_value(let node, let key, let value) const {
 
         let new_node = set_branch(node, key, value);
 
@@ -346,116 +464,67 @@ namespace Olly {
                 }
             }
 
-            // Check for and perform rotation.
-            if (!queue.empty()) {
-
-                let parent_node = queue.back();
-                queue.pop_back();
-
-                bool_type push_left = left_right.back();
-                left_right.pop_back();
-
-                if (push_left) {
-                    new_node = make_node(first(parent_node), new_node, third(parent_node));
-                }
-                else {
-                    new_node = make_node(first(parent_node), second(parent_node), new_node);
-                }
-                new_node = rotate(new_node);
-            }
-            
-            // print("new_node = " + str(new_node));
-
-            // Balance map here.  
-            //size_type  left_height = calculate_height(second(new_node));
-            //size_type right_height = calculate_height( third(new_node));
-
-            //std::cout << " left_height = " <<  left_height << std::endl;
-            //std::cout << "right_height = " << right_height << std::endl;
-
             auto j = left_right.crbegin();
 
             for (auto i = queue.crbegin(); i != queue.crend(); ++i, ++j) {
 
                 if (*j) {
-                    new_node = make_node(first(*i), new_node, third(*i));
-
-                    new_node = rotate(new_node);
+                    new_node = map(first(*i), new_node, third(*i))._node;
                 }
                 else {
-                    new_node = make_node(first(*i), second(*i), new_node);
+                    new_node = map(first(*i), second(*i), new_node)._node;
                 }
             }
         }
-        // print("new_node = " + str(new_node));
 
         return new_node;
     }
 
-    inline let map::set_branch(let node, let key, let value) {
+    inline let map::right_rotation(let node) const {
+    
+        let a = second(node);
+        a = define_node(first(a), second(a), third(a));
 
-        if (!node.is()) {
-            return make_node(make_pair(key, value), expression(), expression());
-        }
+        let b = third(a);
 
-        let pair = first(node);
+        let c = define_node(first(node), b, third(node));
 
-        if (first(pair) == key) {
+        a = define_node(first(a), second(a), c);
 
-            return make_node(make_pair(key, value), second(node), third(node));
-        }
-
-        return nothing();
+        return a;
     }
 
-    inline let map::make_node(let p, let l, let r) {
+    inline let map::left_rotation(let node) const {
 
-        let e = expression();
-        e = e.place_lead(integer_type());
-        e = e.place_lead(r);
-        e = e.place_lead(l);
-        e = e.place_lead(p);
+        let a = third(node);
+        a = define_node(first(a), second(a), third(a));
 
-        return e;
+        let b = second(a);
+
+        let c = define_node(first(node), second(node), b);
+
+        a = define_node(first(a), c, third(a));
+
+        return a;
     }
 
-    inline size_type map::calculate_height(let node) {
-        return get_list(node).size();
-    }
-
-    inline let map::rotate(let node) {
-
-        let temp = node;
-
-        size_type  left_height = calculate_height(second(node));
-        size_type right_height = calculate_height( third(node));
-
-        //std::cout << " left height = " << left_height << std::endl;
-        //std::cout << "right height = " << right_height << std::endl;
+    inline let map::define_node(let pair, let left, let right) const {
         
-        if (left_height > right_height) {  // Left rotation.
+        int_type lh = get_height(left);
+        int_type rh = get_height(right);
 
-            let new_node = second(node);
+        integer_type height = (lh > rh ? lh : rh) + 1;
 
-            node = make_node(first(node), third(new_node), third(node));
+        let node = expression();
 
-            node = make_node(first(new_node), second(new_node), node);
+        if (third(pair).is_nothing() && pair.is_type(_node)) {
+
+            node = node.place_lead(height);
+            node = node.place_lead(right);
+            node = node.place_lead(left);
+            node = node.place_lead(pair);
         }
 
-        else if (left_height < right_height) {  // Right rotation.
-
-            let new_node = third(node);
-
-            node = make_node(first(node), second(node), second(new_node));
-
-            node = make_node(first(new_node), node, third(new_node));
-        }
-
-        if (temp != node) {
-            print("old node = " + str(temp));
-            print("new node = " + str(node));
-        }
-        
         return node;
     }
 }
