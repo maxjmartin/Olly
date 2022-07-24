@@ -66,8 +66,10 @@ namespace Olly {
         friend let                 _del_(const map& self, const let& key);
         friend let               _clear_(const map& self);
 
-        friend let               to_pair(const map& self);
-        friend let         to_expression(const map& self);
+        friend let             _to_pair_(const map& self);
+        friend let       _to_expression_(const map& self);
+
+        friend let                 _add_(const map& self, const let& other);
 
     private:
         typedef std::vector<bool_type> direction_queue;
@@ -87,6 +89,9 @@ namespace Olly {
 
         let set_branch(let node, let key, let value) const;
         let  set_value(let node, let key, let value) const;
+
+        let del_branch(let node, let key) const;
+        let  del_value(let node, let key) const;
 
         let       left_rotation(let node) const;
         let      right_rotation(let node) const;
@@ -276,19 +281,50 @@ namespace Olly {
     }
 
     let _del_(const map& self, const let& key) {
-        return let();
+        
+        if (!_is_(self)) {
+            return self;
+        }
+
+        map n = self;
+
+        n._node = n.del_value(n._node, key);
+
+        return n;
     }
 
     let _clear_(const map& self) {
         return map();
     }
 
-    let to_pair(const map& self) {
+    let _to_pair_(const map& self) {
         return first(self._node);
     }
 
-    let to_expression(const map& self) {
-        return self._node;
+    let _to_expression_(const map& self) {
+        return self.get_list();
+    }
+
+    let _add_(const map& self, const let& other) {
+
+        const expression* ptr = other.cast<expression>();
+
+        if (ptr) {
+
+            let args = *ptr;
+            map node = map();
+
+            while (args.is()) {
+                print("args = " + str(args));
+                let p = pop_lead(args);
+
+                node._node = node._node.set(first(p), second(p));
+            }
+
+            return node;
+        }
+
+        return nothing();
     }
 
     inline int_type map::get_height(let node) const {
@@ -438,7 +474,7 @@ namespace Olly {
         if (new_node.is_nothing()) {
 
             auto left_right = std::vector<bool_type>();
-            auto queue      = std::vector<let>();
+            auto queue = std::vector<let>();
 
             while (new_node.is_nothing()) {
 
@@ -461,6 +497,91 @@ namespace Olly {
                     node = third(node);
 
                     new_node = set_branch(node, key, value);
+                }
+            }
+
+            auto j = left_right.crbegin();
+
+            for (auto i = queue.crbegin(); i != queue.crend(); ++i, ++j) {
+
+                if (*j) {
+                    new_node = map(first(*i), new_node, third(*i))._node;
+                }
+                else {
+                    new_node = map(first(*i), second(*i), new_node)._node;
+                }
+            }
+        }
+
+        return new_node;
+    }
+
+    let map::del_branch(let node, let key) const {
+
+        if (!node.is()) {
+            return node;
+        }
+
+        let pair = first(node);
+
+        if (first(pair) == key) {
+
+            let left = second(node);
+            let right = third(node);
+
+            map l_node;
+                l_node._node = define_node(first(left), second(left), third(left));
+
+            map r_node;
+                r_node._node = define_node(first(right), second(right), third(right));
+
+            let args = l_node.get_list().add(r_node.get_list());
+
+            node = expression();
+
+            while (args.is()) {
+
+                let p = pop_lead(args);
+
+                node = set_value(node, first(p), second(p));
+            }
+
+            return node;
+        }
+
+        return nothing();
+    }
+
+    let map::del_value(let node, let key) const {
+
+        let new_node = del_branch(node, key);
+
+        if (new_node.is_nothing()) {
+
+            auto left_right = std::vector<bool_type>();
+            auto queue      = std::vector<let>();
+
+            while (new_node.is_nothing()) {
+
+                queue.push_back(node);
+
+                let pair = first(node);
+
+                if (first(pair) < key) {  // left
+
+                    left_right.push_back(true);
+
+                    node = second(node);
+
+                    new_node = del_branch(node, key);
+                }
+                else if (first(pair) > key) {  // right
+
+                    left_right.push_back(false);
+
+                    node = third(node);
+
+                    new_node = del_branch(node, key);
                 }
             }
 
