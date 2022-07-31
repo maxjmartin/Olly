@@ -117,9 +117,7 @@ namespace Olly {
         let                 set(const let& key, const let& val)            const;  // Set the value of an element in a collection.
         let                 del(const let& key)                            const;  // Delete an element from a collection.
         
-        let            get_pair()                                          const;  // Get a pair of elements from an object.
-        int_type    get_integer()                                          const;  // Get an integer representation of an object.
-        let      get_expression()                                          const;  // Convert an object to an expression.
+        let                pair()                                          const;  // Get a pair of elements from an object.
 
         bool_type      iterable()                                          const;
         bool_type    is_nothing()                                          const;
@@ -207,9 +205,7 @@ namespace Olly {
             virtual let             _set(const let& key, const let& val)            const = 0;
             virtual let             _del(const let& key)                            const = 0;
 
-            virtual let             _get_pair()                                     const = 0;
-            virtual int_type        _get_integer()                                  const = 0;
-            virtual let             _get_expression()                               const = 0;
+            virtual let             _pair()                                         const = 0;
 
             virtual bool_type       _iterable()                                     const = 0;
             virtual bool_type       _is_nothing()                                   const = 0;
@@ -283,9 +279,7 @@ namespace Olly {
             let             _set(const let& key, const let& val)            const;
             let             _del(const let& key)                            const;
 
-            let             _get_pair()                                     const;
-            int_type        _get_integer()                                  const;
-            let             _get_expression()                               const;
+            let             _pair()                                         const;
 
             bool_type       _iterable()                                     const;
             bool_type       _is_nothing()                                   const;
@@ -349,7 +343,7 @@ namespace Olly {
     void print(const str_type& str);          // Accept any single string and print it with a std::endl.
     void print(const let& a);                 // Accept any single 'let' and print it with a std::endl.
 
-    str_type  str(const let& a);             // Convert any 'let' to a str_type.
+    str_type  str(const  let& a);             // Convert any 'let' to a str_type.
     str_type repr(const let& a);              // Convert any 'let' to a str_type representation of the 'let'.
 
     bool_type expression_is_empty(let expr);  // Determine if an expression is empty.
@@ -357,8 +351,6 @@ namespace Olly {
 
     let pop_lead(let& expr);                  // Return the lead element of an object and shift it.
     let pop_last(let& expr);                  // Return the last element of an object and shift it.
-
-    let make_pair(let key, let val);          // Define a pair of two elements.
 
     let  first(let p);                        // Return the first element of an expression.
     let second(let p);                        // Return the second element of an expression.
@@ -665,28 +657,10 @@ namespace Olly {
 
 
     template<typename T>            /****  Get A Pair Of Values From  ****/
-    let _get_pair_(const T& self);
+    let _pair_(const T& self);
 
     template<typename T>
-    inline let _get_pair_(const T& self) {
-        return nothing();
-    }
-
-
-    template<typename T>            /**** Get An Integer Value From Object  ****/
-    int_type _get_integer_(const T& self);
-
-    template<typename T>
-    inline int_type _get_integer_(const T& self) {
-        return 0;
-    }
-
-
-    template<typename T>            /**** Get An Expression Value From Object  ****/
-    let _get_expression_(const T& self);
-
-    template<typename T>
-    inline let _get_expression_(const T& self) {
+    inline let _pair_(const T& self) {
         return nothing();
     }
 
@@ -1019,19 +993,11 @@ namespace Olly {
     }
 
     inline let let::del(const let& other) const {
-        return _self->_del(other);
+        return _self->_get(other);
     }
 
-    inline let let::get_pair() const {
-        return _self->_get_pair();
-    }
-
-    inline int_type let::get_integer() const {
-        return _self->_get_integer();
-    }
-
-    inline let let::get_expression() const {
-        return _self->_get_expression();
+    inline let let::pair() const {
+        return _self->_pair();
     }
 
     inline bool_type let::iterable() const {
@@ -1292,21 +1258,6 @@ namespace Olly {
     template <typename T>
     inline let let::data_type<T>::_del(const let& key) const {
         return _del_(_data, key);
-    }
-
-    template <typename T>
-    inline let let::data_type<T>::_get_pair() const {
-        return _get_pair_(_data);
-    }
-
-    template <typename T>
-    inline int_type let::data_type<T>::_get_integer() const {
-        return _get_integer_(_data);
-    }
-
-    template <typename T>
-    inline let let::data_type<T>::_get_expression() const {
-        return _get_expression_(_data);
     }
 
     template <typename T>

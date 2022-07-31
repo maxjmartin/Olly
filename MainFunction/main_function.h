@@ -1,0 +1,8 @@
+﻿#ifndef MAIN_H	// OliverLang.h : Include file for standard system include files,
+#define MAIN_H	// or project specific include files.
+
+#include <iostream>
+
+#include "../Oliver_Lang/Olliver.h"
+
+#endif // MAIN_H

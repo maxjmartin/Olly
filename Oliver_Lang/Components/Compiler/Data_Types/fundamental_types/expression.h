@@ -60,7 +60,11 @@ namespace Olly {
         friend let          _place_lead_(const expression& self, const let& other);
         friend let           _drop_lead_(const expression& self);
         friend let             _reverse_(const expression& self);
+
+        friend let                 _add_(const expression& self, const let& other);
     };
+
+    let make_pair(let key, let val);
 
     /********************************************************************************************/
     //
@@ -248,5 +252,34 @@ namespace Olly {
         }
 
         return a;
+    }
+
+    let _add_(const expression& self, const let& other) {
+
+        const expression* ptr = other.cast<expression>();
+
+        if (ptr) {
+
+            let a = _reverse_(self);
+            let b = *ptr;
+
+            while (a.is()) {
+                b = b.place_lead(pop_lead(a));
+            }
+
+            return b;
+        }
+
+        return nothing();
+    }
+
+    let make_pair(let key, let val) {
+
+        let exp = expression();
+
+        exp = exp.place_lead(val);
+        exp = exp.place_lead(key);
+
+        return exp;
     }
 }

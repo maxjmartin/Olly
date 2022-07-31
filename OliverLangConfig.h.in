@@ -1,0 +1,3 @@
+// the configured options and settings for OliverLang
+#define OliverLang_VERSION_MAJOR @OliverLang_VERSION_MAJOR@
+#define OliverLang_VERSION_MINOR @OliverLang_VERSION_MINOR@

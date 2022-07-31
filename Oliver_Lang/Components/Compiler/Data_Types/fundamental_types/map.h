@@ -66,7 +66,7 @@ namespace Olly {
         friend let                 _del_(const map& self, const let& key);
         friend let               _clear_(const map& self);
 
-        friend let             _to_pair_(const map& self);
+        friend let             _get_pair_(const map& self);
         friend let       _to_expression_(const map& self);
 
         friend let                 _add_(const map& self, const let& other);
@@ -86,6 +86,7 @@ namespace Olly {
         let  get_list(let node) const;
 
         let  get_key(let node) const;
+        let  get_val(let node) const;
 
         let set_branch(let node, let key, let value) const;
         let  set_value(let node, let key, let value) const;
@@ -225,7 +226,7 @@ namespace Olly {
 
         while (n.is_something()) {
 
-            let pair = n.to_pair();
+            let pair = n.get_pair();
 
             if (first(pair) == key) {
                 return true;
@@ -249,7 +250,7 @@ namespace Olly {
 
         while (n.is_something()) {
 
-            let pair = n.to_pair();
+            let pair = n.get_pair();
 
             if (first(pair) == key) {
                 return second(pair);
@@ -297,7 +298,7 @@ namespace Olly {
         return map();
     }
 
-    let _to_pair_(const map& self) {
+    let _get_pair_(const map& self) {
         return first(self._node);
     }
 
@@ -307,18 +308,18 @@ namespace Olly {
 
     let _add_(const map& self, const let& other) {
 
-        const expression* ptr = other.cast<expression>();
+        const map* ptr = other.cast<map>();
 
         if (ptr) {
 
-            let args = *ptr;
-            map node = map();
+            let args = ptr->get_list();
+            map node = self;
 
             while (args.is()) {
-                print("args = " + str(args));
+
                 let p = pop_lead(args);
 
-                node._node = node._node.set(first(p), second(p));
+                node._node = node.set_value(node._node, first(p), second(p));
             }
 
             return node;
@@ -328,7 +329,7 @@ namespace Olly {
     }
 
     inline int_type map::get_height(let node) const {
-        return (node.is() ? fourth(node).to_integer() : -1);
+        return (node.is() ? fourth(node).get_integer() : -1);
     }
 
     inline int_type map::get_balance(let node) const {
@@ -451,10 +452,19 @@ namespace Olly {
         return first(first(node));
     }
 
+    inline let Olly::map::get_val(let node) const {
+        return second(first(node));
+    }
+
     let map::set_branch(let node, let key, let value) const {
 
         if (!node.is()) {
             return map(make_pair(key, value), expression(), expression())._node;
+        }
+
+        if (key.type() != get_key(node).type()) {
+
+            return node;
         }
 
         let pair = first(node);

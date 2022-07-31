@@ -45,20 +45,20 @@ namespace Olly {
         integer_type(const int_type& value);
         virtual ~integer_type();
 
-        friend str_type   _type_(const integer_type& self);
-        friend bool_type    _is_(const integer_type& self);
-        friend real_type  _comp_(const integer_type& self, const let& other);
-        friend void        _str_(stream_type& out, const integer_type& self);
-        friend void       _repr_(stream_type& out, const integer_type& self);
+        friend str_type       _type_(const integer_type& self);
+        friend bool_type        _is_(const integer_type& self);
+        friend real_type      _comp_(const integer_type& self, const let& other);
+        friend void            _str_(stream_type& out, const integer_type& self);
+        friend void           _repr_(stream_type& out, const integer_type& self);
 
-        friend let         _add_(const integer_type& self, const let& other);
-        friend let         _sub_(const integer_type& self, const let& other);
-        friend let         _mul_(const integer_type& self, const let& other);
-        friend let         _div_(const integer_type& self, const let& other);
-        friend let         _mod_(const integer_type& self, const let& other);
-        friend let         _neg_(const integer_type& self);
+        friend let             _add_(const integer_type& self, const let& other);
+        friend let             _sub_(const integer_type& self, const let& other);
+        friend let             _mul_(const integer_type& self, const let& other);
+        friend let             _div_(const integer_type& self, const let& other);
+        friend let             _mod_(const integer_type& self, const let& other);
+        friend let             _neg_(const integer_type& self);
 
-        int_type integer() const;
+        friend int_type _to_integer_(const integer_type& self);
 
     private:
         int_type _value;
@@ -169,9 +169,8 @@ namespace Olly {
         return integer_type(-self._value);
     }
 
-    int_type integer_type::integer() const {
-
-        return _value;
+    int_type _to_integer_(const integer_type& self) {
+        return self._value;
     }
 
 } // end
