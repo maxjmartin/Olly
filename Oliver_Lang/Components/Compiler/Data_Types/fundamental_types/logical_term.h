@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LOGICAL_TERM_H
+#define LOGICAL_TERM_H
 
 /********************************************************************************************/
 //
@@ -242,4 +243,5 @@ namespace Olly {
         return boolean(1.0 - self._term, self._weight);
     }
 
-} // end
+}
+#endif // LOGICAL_TERM_H

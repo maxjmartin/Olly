@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FILE_WRITER_H
+#define FILE_WRITER_H
 
 /********************************************************************************************/
 //
@@ -106,4 +107,5 @@ namespace Olly {
 			_output << std::endl;
 		}
 	}
-} // end Olly
+}
+#endif // FILE_WRITER_H

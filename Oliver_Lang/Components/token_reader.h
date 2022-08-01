@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TOKEN_READER_H
+#define TOKEN_READER_H
 
 /********************************************************************************************/
 //
@@ -122,4 +123,5 @@ namespace Olly {
 			return false;
 		}
 
-} // end Olly
+}
+#endif // TOKEN_READER_H

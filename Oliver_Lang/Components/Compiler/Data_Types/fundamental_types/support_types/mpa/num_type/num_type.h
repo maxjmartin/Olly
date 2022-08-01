@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NUM_TYPE_H
+#define NUM_TYPE_H
 
 /********************************************************************************************/
 //
@@ -27,4 +28,5 @@ namespace Olly {
     namespace MPA {
 
     } // end MPA
-} // end Olly
+}
+#endif // NUM_TYPE_H

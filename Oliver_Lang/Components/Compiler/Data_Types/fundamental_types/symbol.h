@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SYMBOL_H
+#define SYMBOL_H
 
 /********************************************************************************************/
 //
@@ -115,4 +116,5 @@ namespace Olly {
         return "symbol";
     }
 
-} // end
+}
+#endif // SYMBOL_H

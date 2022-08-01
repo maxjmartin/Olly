@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FUNDAMENTAL_OPERATORS_H
+#define FUNDAMENTAL_OPERATORS_H
 
 /********************************************************************************************/
 //
@@ -195,4 +196,5 @@ namespace Olly {
         }
 
     }  // end eval
-} // end Olly
+}
+#endif // FUNDAMENTAL_OPERATORS_H

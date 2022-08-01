@@ -1,4 +1,5 @@
-#pragma once
+#ifndef STRING_H
+#define STRING_H
 
 /********************************************************************************************/
 //
@@ -166,4 +167,5 @@ namespace Olly {
         return true;
     }
 
-} // end
+}
+#endif // STRING_H

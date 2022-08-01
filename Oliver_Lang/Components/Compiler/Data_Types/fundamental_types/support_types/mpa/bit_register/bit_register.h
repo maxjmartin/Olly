@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef BIT_REGISTER_H
+#define BIT_REGISTER_H
 /********************************************************************************************/
 //
 //          Copyright 2021 Max J. Martin
@@ -1077,4 +1077,5 @@ namespace Olly {
 
         return I(0);
     }
-}  // end Olly
+}
+#endif // BIT_REGISTER_H

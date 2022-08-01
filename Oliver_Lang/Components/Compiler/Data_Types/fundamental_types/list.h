@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LIST_H
+#define LIST_H
 
 /********************************************************************************************/
 //
@@ -371,3 +372,4 @@ namespace Olly {
         return list();
     }
 }
+#endif // LIST_H

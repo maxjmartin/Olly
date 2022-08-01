@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EVALUATOR_H
+#define EVALUATOR_H
 
 /********************************************************************************************/
 //
@@ -377,10 +378,12 @@ namespace Olly {
             } while (!_code.empty());
         }
     }  // end eval
-} // end Olly
+}
 
 #include "fundamental_operators.h"
 #include    "sequence_operators.h"
 #include "associative_operators.h"
 #include       "unary_operators.h"
 #include      "binary_operators.h"
+
+#endif // EVALUATOR_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LAMBDA_H
+#define LAMBDA_H
 
 /********************************************************************************************/
 //
@@ -228,4 +229,5 @@ namespace Olly {
         }
     }
 
-} // end
+}
+#endif // LAMBDA_H

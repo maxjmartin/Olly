@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ERROR_H
+#define ERROR_H
 
 /********************************************************************************************/
 //
@@ -102,4 +103,5 @@ namespace Olly {
         out << "ERROR";
     }
 
-} // end
+}
+#endif // ERROR_H

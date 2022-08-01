@@ -1,4 +1,5 @@
-#pragma once
+#ifndef REGEX_STRINGS_H
+#define REGEX_STRINGS_H
 
 /********************************************************************************************/
 //
@@ -125,4 +126,5 @@ namespace Olly {
                                           DEC_REG_STR     Denominator, which is required.
                                           $               The string must end with pattern.
                                         */
-} // end Olly
+}
+#endif // REGEX_STRINGS_H

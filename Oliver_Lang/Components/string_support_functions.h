@@ -1,4 +1,5 @@
-#pragma once
+#ifndef STRING_SUPPORT_FUNCTIONS_H
+#define STRING_SUPPORT_FUNCTIONS_H
 
 /********************************************************************************************/
 //
@@ -176,4 +177,5 @@ namespace Olly {
         return n;
     }
 
-} // end Olly
+}
+#endif // STRING_SUPPORT_FUNCTIONS_H

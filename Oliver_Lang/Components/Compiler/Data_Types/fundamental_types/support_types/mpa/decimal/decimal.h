@@ -1,4 +1,5 @@
-#pragma once
+#ifndef <name>_H
+#define <name>_H
 
 /********************************************************************************************/
 //
@@ -222,7 +223,8 @@ namespace Olly {
         }
 
     } // end MPA
-} // end Olly
+}
+#endif // <name>_H
 
 /*
     decimal::set_scale(64);

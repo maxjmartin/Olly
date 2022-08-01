@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SYSTEM_FUNDAMENTALS_H
+#define SYSTEM_FUNDAMENTALS_H
 
 /********************************************************************************************/
 //
@@ -112,4 +113,5 @@ namespace Olly {
                                             "(", ")", "'", "'", "\"", "\"", "[", "]", "{", "}", "`", "`"
                                         };
 
-} // end Olly
+}
+#endif // SYSTEM_FUNDAMENTALS_H

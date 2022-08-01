@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NUMBER_H
+#define NUMBER_H
 
 /********************************************************************************************/
 //
@@ -373,4 +374,5 @@ namespace Olly {
         return static_cast<int_type>(_value.real());
     }
 
-} // end
+}
+#endif // NUMBER_H

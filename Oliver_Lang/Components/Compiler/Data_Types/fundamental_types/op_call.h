@@ -1,4 +1,5 @@
-#pragma once
+#ifndef OP_CALL_H
+#define OP_CALL_H
 
 /********************************************************************************************/
 //
@@ -136,4 +137,5 @@ namespace Olly {
         return self._value;
     }
 
-} // end
+}
+#endif // OP_CALL_H

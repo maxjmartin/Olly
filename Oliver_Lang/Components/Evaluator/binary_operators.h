@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BINDARY_OPERATORS_H
+#define BINDARY_OPERATORS_H
 
 /********************************************************************************************/
 //
@@ -109,4 +110,5 @@ namespace Olly {
         }
 
     }  // end eval
-} // end Olly
+}
+#endif // BINDARY_OPERATORS_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TEXT_READER_H
+#define TEXT_READER_H
 
 /********************************************************************************************/
 //
@@ -193,4 +194,5 @@ namespace Olly {
             return "";
         }
 
-} // end Olly
+}
+#endif // TEXT_READER_H

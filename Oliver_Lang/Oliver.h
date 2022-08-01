@@ -1,5 +1,5 @@
-#ifndef UNARY_OPERATORS_H
-#define UNARY_OPERATORS_H
+#ifndef OLIVER_H
+#define OLIVER_H
 
 /********************************************************************************************/
 //
@@ -22,35 +22,15 @@
 //
 /********************************************************************************************/
 
-#include "evaluator.h"
+#include <iostream>
+
+#include "Components/Compiler/Data_Types/base_configuration/system_fundamentals.h"
+#include "Components/text_reader.h"
+#include "Components/text_parser.h"
+#include "Components/file_writer.h"
+#include "Components/Compiler/compiler.h"
+#include "Components/Evaluator/evaluator.h"
 
 namespace Olly {
-    namespace eval {
-
-        inline void evaluator::unary_operators(OP_CODE& opr) {
-
-            let x = get_expression_from_stack();
-
-            switch (opr) {
-
-            case OP_CODE::POS_op:
-                break;
-            
-            case OP_CODE::NEG_op:
-                x = x.neg();
-                break;
-
-            case OP_CODE::IS_op:
-                x = boolean(x.is());
-                break;
-
-            default:
-                break;
-            }
-
-            set_expression_on_code(x);
-        }
-
-    }  // end eval
-}
-#endif // UNARY_OPERATORS_H
+} 
+#endif // OLIVER_H

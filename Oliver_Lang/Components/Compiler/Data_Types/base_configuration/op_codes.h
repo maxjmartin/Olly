@@ -1,4 +1,5 @@
-#pragma once
+#ifndef OP_CODES_H
+#define OP_CODES_H
 
 /********************************************************************************************/
 //
@@ -238,4 +239,5 @@ namespace Olly {
 
     };
 
-} // end
+}
+#endif // OP_CODES_H

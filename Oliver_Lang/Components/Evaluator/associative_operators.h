@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ASSOCIATIVE_OPERATORS_H
+#define ASSOCIATIVE_OPERATORS_H
 
 /********************************************************************************************/
 //
@@ -85,4 +86,5 @@ namespace Olly {
         }
 
     }  // end eval
-} // end Olly
+}
+#endif // ASSOCIATIVE_OPERATORS_H

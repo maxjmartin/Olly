@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COMPILER_H
+#define COMPILER_H
 
 /********************************************************************************************/
 //
@@ -405,4 +406,5 @@ namespace Olly {
             return text;
         }
 
-} // end Olly
+}
+#endif // COMPILER_H

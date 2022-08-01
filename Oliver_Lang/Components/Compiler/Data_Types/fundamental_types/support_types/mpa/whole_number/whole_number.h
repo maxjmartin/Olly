@@ -1,4 +1,5 @@
-#pragma once
+#ifndef WHOLE_NUMBER_H
+#define WHOLE_NUMBER_H
 
 /********************************************************************************************/
 //
@@ -153,4 +154,5 @@ namespace Olly {
             return _reg.to_integral<N>();
         }
     } // end MPA
-}  // end Olly
+}
+#endif // WHOLE_NUMBER_H

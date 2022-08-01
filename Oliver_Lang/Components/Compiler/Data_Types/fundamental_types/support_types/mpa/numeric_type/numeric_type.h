@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NUMERIC_TYPE_H
+#define NUMERIC_TYPE_H
 
 /********************************************************************************************/
 //
@@ -281,4 +282,5 @@ namespace Olly {
             return 0;
         }
     } // end MPA
-} // end Olly
+}
+#endif // NUMERIC_TYPE_H

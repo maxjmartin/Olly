@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SEQUENCE_OPERATOR_H
+#define SEQUENCE_OPERATOR_H
 
 /********************************************************************************************/
 //
@@ -154,4 +155,5 @@ namespace Olly {
         }
 
     }  // end eval
-} // end Olly
+}
+#endif // SEQUENCE_OPERATOR_H
